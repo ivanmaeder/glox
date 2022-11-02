@@ -11,7 +11,7 @@ import (
 /*
    new Scanner(code)
    s.scanTokens()
-     s.scanToken() "finds" the right token
+     s.scanToken() finds the right token, sometimes by peeking ahead or e.g., looking for the closing string terminator
        s.addToken()
          s.tokens.append()
 
