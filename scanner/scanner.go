@@ -124,8 +124,13 @@ func (s *scanner) scanToken() {
 			break
 		}
 
-		if c >= '0' && c <= '9' {
+		if isDigit(c) {
 			s.number()
+			break
+		}
+
+		if isAlpha(c) {
+			s.identifier()
 			break
 		}
 
@@ -133,16 +138,42 @@ func (s *scanner) scanToken() {
 	}
 }
 
+func (s *scanner) identifier() {
+	for isAlphanumeric(s.peek()) {
+		s.advance()
+	}
+
+	text := s.source[s.start:s.current]
+	tokenType := tokens.Keywords[text]
+	if tokenType == 0 {
+		tokenType = tokens.IDENTIFIER
+	}
+
+	s.addToken(tokenType, "")
+}
+
+func isAlphanumeric(c byte) bool {
+	return isAlpha(c) || isDigit(c)
+}
+
+func isAlpha(c byte) bool {
+	return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_'
+}
+
+func isDigit(c byte) bool {
+	return c >= '0' && c <= '9'
+}
+
 func (s *scanner) number() {
-	for s.peek() >= '0' && s.peek() <= '9' {
+	for isDigit(s.peek()) {
 		s.advance()
 	}
 
-	if s.peek() == '.' && s.peekNext() >= '0' && s.peekNext() <= '9' {
+	if s.peek() == '.' && isDigit(s.peekNext()) {
 		s.advance()
 	}
 
-	for s.peek() >= '0' && s.peek() <= '9' {
+	for isDigit(s.peek()) {
 		s.advance()
 	}
 

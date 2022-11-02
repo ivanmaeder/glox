@@ -9,12 +9,23 @@ import (
 )
 
 /*
-   new Scanner(code)
    s.scanTokens()
      s.scanToken() finds the right token, sometimes by peeking ahead or e.g., looking for the closing string terminator
        s.addToken()
          s.tokens.append()
 
+	TERMINOLOGY 		LEXICAL GRAMMAR 	SYNTACTIC GRAMMAR
+	Alphabet        Characters				Tokens
+	String          Lexeme/token      Expression
+	Implemented by  Scanner           Parser
+
+	SCANNER
+	- rules for how characters get grouped into tokens—was called a regular language
+	- emits a flat sequence of tokens
+	- not enough for arbitrarily-nested structures
+
+	PARSER (FORMAL GRAMMAR)
+	- which strings are valid and which aren't
 */
 var hadError = false
 
