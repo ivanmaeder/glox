@@ -70,7 +70,7 @@ func runPrompt() {
 }
 
 func run(code string) {
-	s := scanner.NewScanner(code)
+	s := scanner.NewScanner(code, flagError)
 	tokens := s.ScanTokens()
 
 	for _, token := range tokens {
@@ -78,12 +78,12 @@ func run(code string) {
 	}
 }
 
-func error(line int, message string) {
+func flagError(line int, message string) {
 	report(line, "", message)
 }
 
 func report(line int, where string, message string) {
-	fmt.Printf("[line %d ] Error%s: %s", line, where, message)
+	fmt.Printf("[line %d ] Error%s: %s\n", line, where, message)
 
 	hadError = true
 }

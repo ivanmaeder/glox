@@ -4,15 +4,18 @@ import (
 	"glox/pkg/tokens"
 )
 
+type errorHandler func(int, string)
+
 type scanner struct {
-	source  string
-	tokens  []tokens.Token
-	start   int
-	current int
-	line    int
+	source    string
+	tokens    []tokens.Token
+	start     int
+	current   int
+	line      int
+	flagError errorHandler
 }
 
-func NewScanner(source string) scanner {
+func NewScanner(source string, flagError errorHandler) scanner {
 	scanner := scanner{}
 
 	scanner.source = source
@@ -20,6 +23,8 @@ func NewScanner(source string) scanner {
 	scanner.start = 0
 	scanner.current = 0
 	scanner.line = 1
+
+	scanner.flagError = flagError
 
 	return scanner
 }
@@ -71,6 +76,11 @@ func (s *scanner) scanToken() {
 		s.addToken(tokens.SEMICOLON, "")
 	case '*':
 		s.addToken(tokens.STAR, "")
+	default:
+		var lineFeed byte = 10
+		if c != lineFeed {
+			s.flagError(s.line, "Unexpected character.")
+		}
 	}
 }
 
