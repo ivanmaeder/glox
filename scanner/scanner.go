@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"glox/pkg/tokens"
+	"strconv"
 )
 
 type errorHandler func(int, string)
@@ -33,7 +34,7 @@ func (s *scanner) isAtEnd() bool {
 	return s.current >= len(s.source)
 }
 
-func (s *scanner) addToken(tokenType tokens.TokenType, literal string) {
+func (s *scanner) addToken(tokenType tokens.TokenType, literal interface{}) {
 	text := s.source[s.start:s.current]
 
 	s.tokens = append(s.tokens, tokens.Token{
@@ -177,7 +178,7 @@ func (s *scanner) number() {
 		s.advance()
 	}
 
-	value := s.source[s.start:s.current]
+	value, _ := strconv.ParseFloat(s.source[s.start:s.current], 64)
 	s.addToken(tokens.NUMBER, value)
 }
 

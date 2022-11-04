@@ -9,23 +9,51 @@ import (
 )
 
 /*
-   s.scanTokens()
-     s.scanToken() finds the right token, sometimes by peeking ahead or e.g., looking for the closing string terminator
-       s.addToken()
-         s.tokens.append()
-
-	TERMINOLOGY 		LEXICAL GRAMMAR 	SYNTACTIC GRAMMAR
-	Alphabet        Characters				Tokens
-	String          Lexeme/token      Expression
-	Implemented by  Scanner           Parser
+	TERM            LEXICAL GRAMMAR  SYNTACTIC GRAMMAR
+	Alphabet        Characters       Lexeme/token
+	String          Lexeme/token     Expression
+	Implemented by  Scanner          Parser
 
 	SCANNER
-	- rules for how characters get grouped into tokens—was called a regular language
-	- emits a flat sequence of tokens
-	- not enough for arbitrarily-nested structures
+	-	rules for how characters get grouped into tokens—was called a regular language
+	-	emits a flat sequence of tokens
+	-	not enough for arbitrarily-nested structures
 
-	PARSER (FORMAL GRAMMAR)
+		s.scanTokens()
+			s.scanToken() finds the right token, sometimes by peeking ahead or e.g., looking for the closing string terminator
+				s.addToken()
+					s.tokens.append()
+
+	PARSER
 	- which strings are valid and which aren't
+	- rules = productions
+		- head
+		- body = a list of symbols
+			- two types of symbols
+				- terminal = a "letter" in the grammar (token/lexeme) (no more "moves" in the game)
+				- nonterminal = reference to another rule; play that rule and insert whatever it produces here
+	- derivations = generate strings that are in the grammar
+
+  GO
+	- is-a relationship
+
+		type Person struct {
+			Name string
+		}
+
+		func (p *Person) Talk() {
+			fmt.Println("Hi, my name is", p.Name)
+		}
+
+		type Android struct {
+		  Person
+		  Model string
+		}
+
+		a := new(Android)
+		a.Talk() //an Android is a person
+
+  - in interfaces we define "method sets"
 */
 var hadError = false
 
