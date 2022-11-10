@@ -33,27 +33,6 @@ import (
 				- terminal = a "letter" in the grammar (token/lexeme) (no more "moves" in the game)
 				- nonterminal = reference to another rule; play that rule and insert whatever it produces here
 	- derivations = generate strings that are in the grammar
-
-  GO
-	- is-a relationship
-
-		type Person struct {
-			Name string
-		}
-
-		func (p *Person) Talk() {
-			fmt.Println("Hi, my name is", p.Name)
-		}
-
-		type Android struct {
-		  Person
-		  Model string
-		}
-
-		a := new(Android)
-		a.Talk() //an Android is a person
-
-  - in interfaces we define "method sets"
 */
 var hadError = false
 
@@ -126,3 +105,47 @@ func report(line int, where string, message string) {
 
 	hadError = true
 }
+
+/*
+  GO
+  - in interfaces we define "method sets"
+	- is-a relationship:
+
+		type Person struct {
+			Name string
+		}
+
+		func (p *Person) Talk() {
+			fmt.Println("Hi, my name is", p.Name)
+		}
+
+		type Android struct {
+		  Person // this gives all Androids access to Talk()
+		  Model string
+		}
+
+		a := new(Android)
+		a.Talk() //an Android is a person
+
+	- another option is for a struct to have the same function(s) as an interface
+	  (like duck typing but they call it structural typing because it happens at
+	  compile-time and duck typing is usually at runtime),
+
+		type Shape interface {
+			Area() float32
+		}
+
+		type Rectangle struct {
+			length float32
+			width  float32
+		}
+
+		func (r *Rectangle) Area() float32 {
+			return r.length * r.width
+		}
+
+		var shape Shape = &Rectangle{
+			length: 10,
+			width:  20,
+		}
+*/

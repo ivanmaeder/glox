@@ -34,7 +34,7 @@ func (s *scanner) isAtEnd() bool {
 	return s.current >= len(s.source)
 }
 
-func (s *scanner) addToken(tokenType tokens.TokenType, literal interface{}) {
+func (s *scanner) addToken(tokenType tokens.TokenType, literal any) {
 	text := s.source[s.start:s.current]
 
 	s.tokens = append(s.tokens, tokens.Token{
