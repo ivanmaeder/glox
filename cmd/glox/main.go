@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"glox/lox"
 	"glox/scanner"
 	"io"
 	"os"
@@ -91,14 +92,39 @@ func run(code string) {
 	s := scanner.NewScanner(code, flagError)
 	tokens := s.ScanTokens()
 
-	for _, token := range tokens {
-		fmt.Println(token)
+	parser := lox.Parser{
+		Tokens:  tokens,
+		Current: 0,
 	}
+
+	expression := parser.Parse() //pass flagError()
+
+	if hadError {
+		return
+	}
+
+	//System.out.println(AstPrinter().print(expression))
+	fmt.Println(Print(expression))
+	//for _, token := range tokens {
+	//	fmt.Println(token)
+	//}
 }
 
 func flagError(line int, message string) {
 	report(line, "", message)
 }
+
+/*
+https://craftinginterpreters.com/parsing-expressions.html#entering-panic-mode
+
+static void error(Token token, String message) {
+	if (token.type == TokenType.EOF) {
+		report(token.line, " at end", message);
+	} else {
+		report(token.line, " at '" + token.lexeme + "'", message);
+	}
+}
+*/
 
 func report(line int, where string, message string) {
 	fmt.Printf("[line %d ] Error%s: %s\n", line, where, message)

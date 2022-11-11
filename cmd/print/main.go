@@ -30,7 +30,7 @@ func (p *Printer) VisitUnaryExpr(expr lox.Unary) string {
 	return p.parenthesize(expr.Operator.Lexeme, []lox.Expr{expr.Right})
 }
 
-func (p *Printer) print(expr lox.Expr) string {
+func (p *Printer) Print(expr lox.Expr) string {
 	return expr.Accept(p)
 }
 
