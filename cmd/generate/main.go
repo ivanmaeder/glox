@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode"
 )
 
 func main() {
@@ -41,12 +42,12 @@ func defineVisitor(outputDirectory string, baseName string, types []string) {
 	defer f.Close()
 
 	f.WriteString("package lox\n\n")
-	f.WriteString("type Visitor interface {\n")
+	f.WriteString("type Visitor[K any] interface {\n")
 
 	for _, element := range types {
 		typeName := strings.TrimSpace(strings.Split(element, ":")[0])
 
-		f.WriteString("\tvisit" + typeName + baseName + "(" + strings.ToLower(baseName) + " *" + typeName + ") " + typeName + "\n")
+		f.WriteString("\tVisit" + typeName + baseName + "(" + strings.ToLower(baseName) + " " + typeName + ") K\n")
 	}
 
 	f.WriteString("}\n")
@@ -71,7 +72,11 @@ func defineType(outputDirectory string, baseName string, className string, field
 
 	f.WriteString("type " + className + " struct {\n")
 	for _, element := range fields {
-		f.WriteString("\t" + strings.TrimSpace(element) + "\n")
+		r := []rune(strings.TrimSpace(element))
+		r[0] = unicode.ToUpper(r[0])
+		s := string(r)
+
+		f.WriteString("\t" + s + "\n")
 	}
 	f.WriteString("}\n\n")
 
@@ -86,7 +91,7 @@ func defineType(outputDirectory string, baseName string, className string, field
 	}
 	f.WriteString("}\n}\n\n")
 
-	f.WriteString("func (r *" + className + ") accept(visitor Visitor) " + className + " {\n")
-	f.WriteString("\treturn visitor.visit" + className + baseName + "(r)\n")
+	f.WriteString("func (r " + className + ") Accept(visitor Visitor[string]) string {\n")
+	f.WriteString("\treturn visitor.Visit" + className + baseName + "(r)\n")
 	f.WriteString("}\n\n")
 }

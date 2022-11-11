@@ -148,4 +148,40 @@ func report(line int, where string, message string) {
 			length: 10,
 			width:  20,
 		}
+  - unexported (private) is really package-level
+	- packages are just 1-word (not paths)
+	- naked returns
+	- short var declarations (:=) are only available inside functions
+	- const <name> (<type>) = <value>
+	- ifs can include a short statement: if <statement>; condition {...}
+		- vars in this statement are in scope in the if/else block only
+	- case statements can include logic:
+
+		switch {
+		case a <= 12:
+			//...
+		case a > 12:
+			//...
+		}
+
+	- a deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns
+	- pointers
+		- var p *int
+		- p        //pointer to p
+		- &p       //value
+		- *p = 123 //set the value of p
+		- with structs accessing fields "should" be: (*s).field
+			- but the s.field shorthand is equivalent
+	- this is a struct literal: Vertex{val, val}
+	- an array's length is part of its type!
+		- "when you assign or pass around an array value you will make a copy of its contents. (To avoid the copy you could pass a pointer to the array, but then that’s a pointer to an array, not an array.) One way to think about arrays is as a sort of struct but with indexed rather than named fields: a fixed-size composite value."
+		- init: [3]string{"a", "b", "c"} (or [...]string{"a", "b", "c"})
+		- slices are a dynamically-sized view into the elements of an array
+			- create a slice with arr[n:m]
+			- other slices with the same underlying array will see changes
+			- this creates a slice (and array), []string{"a", "b", "c"}
+			- slice capacity = number of elements in the underlying array counting from the first element in the slice
+				- len(s), cap(s)
+		- use make([]string, size[, capacity]) to create slices with dynamically-sized arrays
+		- use `slice = append(slice, ...values)` to add to a slice (this will increase the capacity of the array)
 */

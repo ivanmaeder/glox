@@ -1,13 +1,14 @@
 package lox
 
 type Grouping struct {
-	expression Expr
+	Expression Expr
 }
 
 func NewGrouping(expression Expr) Grouping {
 	return Grouping{expression}
 }
 
-func (r *Grouping) accept(visitor Visitor) Grouping {
-	return visitor.visitGroupingExpr(r)
+func (r Grouping) Accept(visitor Visitor[string]) string {
+	return visitor.VisitGroupingExpr(r)
 }
+

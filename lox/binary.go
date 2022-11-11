@@ -3,15 +3,16 @@ package lox
 import "glox/pkg/tokens"
 
 type Binary struct {
-	left     Expr
-	operator tokens.Token
-	right    Expr
+	Left Expr
+	Operator tokens.Token
+	Right Expr
 }
 
 func NewBinary(left Expr, operator tokens.Token, right Expr) Binary {
 	return Binary{left, operator, right}
 }
 
-func (r *Binary) accept(visitor Visitor) Binary {
-	return visitor.visitBinaryExpr(r)
+func (r Binary) Accept(visitor Visitor[string]) string {
+	return visitor.VisitBinaryExpr(r)
 }
+
