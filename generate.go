@@ -7,7 +7,7 @@ import (
 	"unicode"
 )
 
-func main() {
+func generate() {
 	if len(os.Args) != 2 {
 		fmt.Println("Usage: generate <directory>")
 		os.Exit(64)

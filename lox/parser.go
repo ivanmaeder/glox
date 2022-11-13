@@ -1,26 +1,40 @@
 package lox
 
-import "glox/pkg/tokens"
+import (
+	"errors"
+	gloxerrors "glox/pkg/errors"
+	"glox/pkg/tokens"
+)
 
 type Parser struct {
-	Tokens  []tokens.Token
-	Current int
+	Tokens    []tokens.Token
+	Current   int
+	FlagError gloxerrors.TokenErrorHandler
 }
 
-func (p *Parser) expression() Expr {
+func (p *Parser) expression() (Expr, error) {
 	return p.equality()
 }
 
-func (p *Parser) equality() Expr {
-	expr := p.comparison()
+func (p *Parser) equality() (Expr, error) {
+	expr, err := p.comparison()
+
+	if err != nil {
+		return nil, err
+	}
 
 	for p.match(tokens.BANG_EQUAL, tokens.EQUAL_EQUAL) {
 		operator := p.previous()
-		right := p.comparison()
+		right, err := p.comparison()
+
+		if err != nil {
+			return nil, err
+		}
+
 		expr = Binary{expr, operator, right}
 	}
 
-	return expr
+	return expr, nil
 }
 
 func (p *Parser) match(types ...tokens.TokenType) bool {
@@ -44,7 +58,7 @@ func (p *Parser) check(tokenType tokens.TokenType) bool {
 
 func (p *Parser) advance() tokens.Token {
 	if !p.isAtEnd() {
-		p.current++
+		p.Current++
 	}
 
 	return p.previous()
@@ -55,109 +69,143 @@ func (p *Parser) isAtEnd() bool {
 }
 
 func (p *Parser) peek() tokens.Token {
-	return p.tokens.get(p.current) //
+	return p.Tokens[p.Current]
 }
 
 func (p *Parser) previous() tokens.Token {
-	return p.tokens.get(p.current - 1) //
+	return p.Tokens[p.Current-1]
 }
 
-func (p *Parser) comparison() Expr {
-	expr := p.term()
+func (p *Parser) comparison() (Expr, error) {
+	expr, err := p.term()
+
+	if err != nil {
+		return nil, err
+	}
 
 	for p.match(tokens.GREATER, tokens.GREATER_EQUAL, tokens.LESS, tokens.LESS_EQUAL) {
 		operator := p.previous()
-		right := p.term()
+		right, err := p.term()
+
+		if err != nil {
+			return nil, err
+		}
+
 		expr = Binary{expr, operator, right}
 	}
 
-	return expr
+	return expr, nil
 }
 
-func (p *Parser) term() Expr {
-	expr := p.factor()
+func (p *Parser) term() (Expr, error) {
+	expr, err := p.factor()
+
+	if err != nil {
+		return nil, err
+	}
 
 	for p.match(tokens.MINUS, tokens.PLUS) {
 		operator := p.previous()
-		right := p.factor()
+		right, err := p.factor()
+
+		if err != nil {
+			return nil, err
+		}
+
 		expr = Binary{expr, operator, right}
 	}
 
-	return expr
+	return expr, nil
 }
 
-func (p *Parser) factor() Expr {
-	expr := p.unary()
+func (p *Parser) factor() (Expr, error) {
+	expr, err := p.unary()
+
+	if err != nil {
+		return nil, err
+	}
 
 	for p.match(tokens.SLASH, tokens.STAR) {
 		operator := p.previous()
-		right := p.unary()
+		right, _ := p.unary()
 		expr = Binary{expr, operator, right}
 	}
 
-	return expr
+	return expr, nil
 }
 
-func (p *Parser) unary() Expr {
+func (p *Parser) unary() (Expr, error) {
 	if p.match(tokens.BANG, tokens.MINUS) {
 		operator := p.previous()
-		right := p.unary()
-		return Unary{operator, right}
+		right, _ := p.unary()
+		return Unary{operator, right}, nil
 	}
 
 	return p.primary()
 }
 
-func (p *Parser) primary() Expr {
+func (p *Parser) primary() (Expr, error) {
 	if p.match(tokens.FALSE) {
-		return Literal{false}
+		return Literal{false}, nil
 	}
 
 	if p.match(tokens.TRUE) {
-		return Literal{true}
+		return Literal{true}, nil
 	}
 
 	if p.match(tokens.NIL) {
-		return Literal{nil}
+		return Literal{nil}, nil
 	}
 
 	if p.match(tokens.NUMBER, tokens.STRING) {
-		return Literal(p.previous().Literal)
+		return Literal{p.previous().Literal}, nil
 	}
 
 	if p.match(tokens.LEFT_PAREN) {
-		expr := p.expression()
-		p.consume(tokens.RIGHT_PAREN, "Expect ')' after expression.")
-		return Grouping{expr}
+		expr, _ := p.expression()
+		_, err := p.consume(tokens.RIGHT_PAREN, "Expect ')' after expression.")
+
+		if err != nil {
+			return nil, err
+		}
+
+		return Grouping{expr}, nil
 	}
 
-	panic(555)
+	err := &gloxerrors.TokenError{
+		Token: p.peek(),
+		Err:   errors.New("expect expression"),
+	}
+
+	p.FlagError(p.peek(), err)
+
+	return nil, err
 }
 
-func (p *Parser) consume(tokenType tokens.TokenType, message string) tokens.Token {
+func (p *Parser) consume(tokenType tokens.TokenType, message string) (tokens.Token, error) {
 	if p.check(tokenType) {
-		return p.advance()
+		return p.advance(), nil
 	}
 
-	//throw error(peek(), message); // FIXME
-	panic(666)
-}
+	token, err := p.peek(), &gloxerrors.TokenError{
+		Token: p.peek(),
+		Err:   errors.New(message),
+	}
 
-//func (p *Parser) error(token tokens.Token, message strings) ParseError {
-//	Lox.error(token, message);
-//
-//	return ParseError{};
-//}
+	p.FlagError(token, err)
+
+	return token, err
+}
 
 func (p *Parser) synchronize() {
 	p.advance()
 
 	for !p.isAtEnd() {
-		if p.previous().tokenType == tokens.SEMICOLON {
+		if p.previous().TokenType == tokens.SEMICOLON {
 			return
 		}
 
-		switch p.peek().tokenType {
+		switch p.peek().TokenType {
 		case tokens.CLASS:
 		case tokens.FUN:
 		case tokens.VAR:
@@ -174,10 +222,11 @@ func (p *Parser) synchronize() {
 }
 
 func (p *Parser) Parse() Expr {
-	return p.expression()
-	//try {
-	//	return expression();
-	//} catch (ParseError error) {
-	//	return null;
-	//}
+	expression, err := p.expression()
+
+	if err != nil {
+		return nil
+	}
+
+	return expression
 }

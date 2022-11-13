@@ -45,7 +45,7 @@ func (p *Printer) parenthesize(name string, exprs []lox.Expr) string {
 	return str
 }
 
-func main() {
+func print() {
 	minus := tokens.Token{
 		TokenType: tokens.MINUS,
 		Lexeme:    "-",
@@ -66,23 +66,5 @@ func main() {
 
 	binary := lox.NewBinary(unary, star, grouping)
 
-	fmt.Println(new(Printer).print(binary))
-	//expr := lox.NewBinary(
-	//	lox.NewUnary(tokens.Token{tokens.TokenType.MINUS, "-", nil, 1}, lox.NewLiteral((123))),
-	//	tokens.Token{tokens.TokenType.STAR, "*", nil, 1},
-	//	lox.NewGrouping(lox.NewLiteral(45.67)),
-	//)
-
-	//fmt.Println(new(Printer).print())
-	/*
-		Expr expression = new Expr.Binary(
-			new Expr.Unary(
-					new Token(TokenType.MINUS, "-", null, 1),
-					new Expr.Literal(123)),
-			new Token(TokenType.STAR, "*", null, 1),
-			new Expr.Grouping(
-					new Expr.Literal(45.67)));
-
-		System.out.println(new AstPrinter().print(expression));
-	*/
+	fmt.Println(new(Printer).Print(binary))
 }

@@ -1,11 +1,10 @@
 package scanner
 
 import (
+	"glox/pkg/errors"
 	"glox/pkg/tokens"
 	"strconv"
 )
-
-type errorHandler func(int, string)
 
 type scanner struct {
 	source    string
@@ -13,10 +12,10 @@ type scanner struct {
 	start     int
 	current   int
 	line      int
-	flagError errorHandler
+	flagError errors.ErrorHandler
 }
 
-func NewScanner(source string, flagError errorHandler) scanner {
+func NewScanner(source string, flagError errors.ErrorHandler) scanner {
 	scanner := scanner{}
 
 	scanner.source = source
