@@ -79,8 +79,6 @@ func run(code string) {
 		return
 	}
 
-	fmt.Println(expression)
-
 	printer := Printer{}
 	fmt.Println(printer.Print(expression))
 }

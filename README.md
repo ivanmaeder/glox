@@ -33,6 +33,12 @@ s.scanTokens()
       - Terminal = a "letter" in the grammar (token/lexeme) (no more "moves" in the game)
       - Nonterminal = reference to another rule; play that rule and insert whatever it produces here
 - Derivations = generate strings that are in the grammar
+- "each rule needs to match expressions at that precedence level or higher"
+- "Recursive descent is the simplest way to build a parser, and doesn’t require using complex parser generator tools like Yacc, Bison or ANTLR."
+  - GCC, V8
+  - "considered a top-down parser because it starts from the top or outermost grammar rule"
+  - "In a top-down parser, you reach the lowest-precedence expressions first because they may in turn contain subexpressions of higher precedence."
+- "Each method for parsing a grammar rule produces a syntax tree for that rule and returns it to the caller. When the body of the rule contains a nonterminal—a reference to another rule—we call that other rule’s method."
 
 ## Go
 

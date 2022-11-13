@@ -12,31 +12,6 @@ type Parser struct {
 	FlagError gloxerrors.TokenErrorHandler
 }
 
-func (p *Parser) expression() (Expr, error) {
-	return p.equality()
-}
-
-func (p *Parser) equality() (Expr, error) {
-	expr, err := p.comparison()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for p.match(tokens.BANG_EQUAL, tokens.EQUAL_EQUAL) {
-		operator := p.previous()
-		right, err := p.comparison()
-
-		if err != nil {
-			return nil, err
-		}
-
-		expr = Binary{expr, operator, right}
-	}
-
-	return expr, nil
-}
-
 func (p *Parser) match(types ...tokens.TokenType) bool {
 	for _, element := range types {
 		if p.check(element) {
@@ -76,6 +51,34 @@ func (p *Parser) previous() tokens.Token {
 	return p.Tokens[p.Current-1]
 }
 
+// expression     → equality ;
+func (p *Parser) expression() (Expr, error) {
+	return p.equality()
+}
+
+// equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+func (p *Parser) equality() (Expr, error) {
+	expr, err := p.comparison()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for p.match(tokens.BANG_EQUAL, tokens.EQUAL_EQUAL) {
+		operator := p.previous()
+		right, err := p.comparison()
+
+		if err != nil {
+			return nil, err
+		}
+
+		expr = Binary{expr, operator, right}
+	}
+
+	return expr, nil
+}
+
+// comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 func (p *Parser) comparison() (Expr, error) {
 	expr, err := p.term()
 
@@ -97,6 +100,7 @@ func (p *Parser) comparison() (Expr, error) {
 	return expr, nil
 }
 
+// term           → factor ( ( "-" | "+" ) factor )* ;
 func (p *Parser) term() (Expr, error) {
 	expr, err := p.factor()
 
@@ -118,6 +122,7 @@ func (p *Parser) term() (Expr, error) {
 	return expr, nil
 }
 
+// factor         → unary ( ( "/" | "*" ) unary )* ;
 func (p *Parser) factor() (Expr, error) {
 	expr, err := p.unary()
 
@@ -134,6 +139,7 @@ func (p *Parser) factor() (Expr, error) {
 	return expr, nil
 }
 
+// unary          → ( "!" | "-" ) unary | primary ;
 func (p *Parser) unary() (Expr, error) {
 	if p.match(tokens.BANG, tokens.MINUS) {
 		operator := p.previous()
@@ -144,6 +150,7 @@ func (p *Parser) unary() (Expr, error) {
 	return p.primary()
 }
 
+// primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
 func (p *Parser) primary() (Expr, error) {
 	if p.match(tokens.FALSE) {
 		return Literal{false}, nil
@@ -163,7 +170,7 @@ func (p *Parser) primary() (Expr, error) {
 
 	if p.match(tokens.LEFT_PAREN) {
 		expr, _ := p.expression()
-		_, err := p.consume(tokens.RIGHT_PAREN, "Expect ')' after expression.")
+		_, err := p.consume(tokens.RIGHT_PAREN, "expect ')' after expression")
 
 		if err != nil {
 			return nil, err
