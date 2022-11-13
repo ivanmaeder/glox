@@ -80,17 +80,6 @@ func defineType(outputDirectory string, baseName string, className string, field
 	}
 	f.WriteString("}\n\n")
 
-	f.WriteString("func New" + className + "(" + strings.Join(fields, ",") + ") " + className + " {\n")
-	f.WriteString("\treturn " + className + "{")
-	comma := ""
-	for _, element := range fields {
-		fieldName := strings.Split(strings.TrimSpace(element), " ")[0]
-
-		f.WriteString(comma + fieldName)
-		comma = ", "
-	}
-	f.WriteString("}\n}\n\n")
-
 	f.WriteString("func (r " + className + ") Accept(visitor Visitor[string]) string {\n")
 	f.WriteString("\treturn visitor.Visit" + className + baseName + "(r)\n")
 	f.WriteString("}\n\n")

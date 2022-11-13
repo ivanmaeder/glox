@@ -53,7 +53,10 @@ func print() {
 		Line:      1,
 	}
 
-	unary := lox.NewUnary(minus, lox.Literal{Value: 123})
+	unary := lox.Unary{
+		Operator: minus,
+		Right:    lox.Literal{Value: 123},
+	}
 
 	star := tokens.Token{
 		TokenType: tokens.STAR,
@@ -62,9 +65,13 @@ func print() {
 		Line:      1,
 	}
 
-	grouping := lox.NewGrouping(lox.NewLiteral(45.67))
+	grouping := lox.Grouping{Expression: lox.Literal{Value: 45.67}}
 
-	binary := lox.NewBinary(unary, star, grouping)
+	binary := lox.Binary{
+		Left:     unary,
+		Operator: star,
+		Right:    grouping,
+	}
 
 	fmt.Println(new(Printer).Print(binary))
 }

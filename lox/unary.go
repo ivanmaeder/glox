@@ -7,10 +7,6 @@ type Unary struct {
 	Right Expr
 }
 
-func NewUnary(operator tokens.Token, right Expr) Unary {
-	return Unary{operator, right}
-}
-
 func (r Unary) Accept(visitor Visitor[string]) string {
 	return visitor.VisitUnaryExpr(r)
 }
