@@ -8,12 +8,12 @@ import (
 )
 
 func generate() {
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: generate <directory>")
+	if len(os.Args) != 3 {
+		fmt.Println("Usage: glox generate <directory>")
 		os.Exit(64)
 	}
 
-	defineAst(os.Args[1], "Expr", []string{
+	defineAst(os.Args[2], "Expr", []string{
 		"Binary   : left Expr, operator tokens.Token, right Expr",
 		"Grouping : expression Expr",
 		"Literal  : value any",
