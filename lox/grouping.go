@@ -4,7 +4,7 @@ type Grouping struct {
 	Expression Expr
 }
 
-func (r Grouping) Accept(visitor Visitor[string]) string {
+func (r Grouping) Accept(visitor Visitor) any {
 	return visitor.VisitGroupingExpr(r)
 }
 

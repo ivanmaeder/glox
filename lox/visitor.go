@@ -1,8 +1,8 @@
 package lox
 
-type Visitor[K any] interface {
-	VisitBinaryExpr(expr Binary) K
-	VisitGroupingExpr(expr Grouping) K
-	VisitLiteralExpr(expr Literal) K
-	VisitUnaryExpr(expr Unary) K
+type Visitor interface {
+	VisitBinaryExpr(expr Binary) any
+	VisitGroupingExpr(expr Grouping) any
+	VisitLiteralExpr(expr Literal) any
+	VisitUnaryExpr(expr Unary) any
 }

@@ -42,12 +42,12 @@ func defineVisitor(outputDirectory string, baseName string, types []string) {
 	defer f.Close()
 
 	f.WriteString("package lox\n\n")
-	f.WriteString("type Visitor[K any] interface {\n")
+	f.WriteString("type Visitor interface {\n")
 
 	for _, element := range types {
 		typeName := strings.TrimSpace(strings.Split(element, ":")[0])
 
-		f.WriteString("\tVisit" + typeName + baseName + "(" + strings.ToLower(baseName) + " " + typeName + ") K\n")
+		f.WriteString("\tVisit" + typeName + baseName + "(" + strings.ToLower(baseName) + " " + typeName + ") any\n")
 	}
 
 	f.WriteString("}\n")
@@ -80,7 +80,7 @@ func defineType(outputDirectory string, baseName string, className string, field
 	}
 	f.WriteString("}\n\n")
 
-	f.WriteString("func (r " + className + ") Accept(visitor Visitor[string]) string {\n")
+	f.WriteString("func (r " + className + ") Accept(visitor Visitor) any {\n")
 	f.WriteString("\treturn visitor.Visit" + className + baseName + "(r)\n")
 	f.WriteString("}\n\n")
 }

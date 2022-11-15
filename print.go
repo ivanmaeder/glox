@@ -10,15 +10,15 @@ type Printer struct {
 	//
 }
 
-func (p *Printer) VisitBinaryExpr(expr lox.Binary) string {
+func (p *Printer) VisitBinaryExpr(expr lox.Binary) any {
 	return p.parenthesize(expr.Operator.Lexeme, []lox.Expr{expr.Left, expr.Right})
 }
 
-func (p *Printer) VisitGroupingExpr(expr lox.Grouping) string {
+func (p *Printer) VisitGroupingExpr(expr lox.Grouping) any {
 	return p.parenthesize("group", []lox.Expr{expr.Expression})
 }
 
-func (p *Printer) VisitLiteralExpr(expr lox.Literal) string {
+func (p *Printer) VisitLiteralExpr(expr lox.Literal) any {
 	if expr.Value == nil {
 		return "nil"
 	}
@@ -26,11 +26,11 @@ func (p *Printer) VisitLiteralExpr(expr lox.Literal) string {
 	return fmt.Sprintf("%v", expr.Value)
 }
 
-func (p *Printer) VisitUnaryExpr(expr lox.Unary) string {
+func (p *Printer) VisitUnaryExpr(expr lox.Unary) any {
 	return p.parenthesize(expr.Operator.Lexeme, []lox.Expr{expr.Right})
 }
 
-func (p *Printer) Print(expr lox.Expr) string {
+func (p *Printer) Print(expr lox.Expr) any {
 	return expr.Accept(p)
 }
 
@@ -38,7 +38,7 @@ func (p *Printer) parenthesize(name string, exprs []lox.Expr) string {
 	str := "(" + name
 	for _, expr := range exprs {
 		str += " "
-		str += expr.Accept(p)
+		str += fmt.Sprintf("%v", expr.Accept(p))
 	}
 	str += ")"
 

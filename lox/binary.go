@@ -8,7 +8,7 @@ type Binary struct {
 	Right Expr
 }
 
-func (r Binary) Accept(visitor Visitor[string]) string {
+func (r Binary) Accept(visitor Visitor) any {
 	return visitor.VisitBinaryExpr(r)
 }
 

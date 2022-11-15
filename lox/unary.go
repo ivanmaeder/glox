@@ -7,7 +7,7 @@ type Unary struct {
 	Right Expr
 }
 
-func (r Unary) Accept(visitor Visitor[string]) string {
+func (r Unary) Accept(visitor Visitor) any {
 	return visitor.VisitUnaryExpr(r)
 }
 
