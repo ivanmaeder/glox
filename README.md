@@ -43,6 +43,7 @@ s.scanTokens()
 ## Go
 
 - In interfaces we define "method sets"
+  - All types are `interface{}` (or `any`)
 - Is-a relationship:
 
 ```
@@ -109,8 +110,9 @@ case a > 12:
   - `p //pointer to p`
   - `&p //value`
   - `\*p = 123 //set the value of p`
-  - With structs accessing fields "should" be: `(*s).field`
+  - With a pointer to a struct, accessing fields "should" be: `(*s).field`
     - But the `s.field` shorthand is equivalent
+    - Similarly, you can call a method with a value receiver with a pointer reference, or a method with a pointer receiver with a value reference (it will all work)
 - This is a struct literal: `Vertex{val, val}`
 - An array's length is part of its type!
   - "… when you assign or pass around an array value you will make a copy of its contents. (To avoid the copy you could pass a pointer to the array, but then that’s a pointer to an array, not an array.) One way to think about arrays is as a sort of struct but with indexed rather than named fields: a fixed-size composite value."
@@ -123,3 +125,65 @@ case a > 12:
       - len(s), cap(s)
   - Use `make([]string, size[, capacity])` to create slices with dynamically-sized arrays
   - Use `slice = append(slice, ...values)` to add to a slice (this will increase the capacity of the array)
+- `range` is for slices or maps
+- Create maps with `make(map[string]Vertex)`
+  - Access values with `m[index]`, delete with `delete(m, key)`, test with `elem, ok = m[key]`
+  - Map literals:
+
+```
+m := map[string]Vertex{
+	"Bell Labs": Vertex{
+		40.68433, -74.39967,
+	},
+	"Google": Vertex{
+		37.42202, -122.08408,
+	},
+}
+```
+
+- "A method is a function with a special receiver argument… a method is just a function with a receiver argument."
+  - `func (r *Receiver) f() {}`
+  - "You can only declare a method with a receiver whose type is defined in the same package as the method."
+  - "Methods with pointer receivers can modify the value to which the receiver points."
+  - Doing this also avoids copying values
+  - "In general, all methods on a given type should have either value or pointer receivers, but not a mixture of both."
+- Type assertions: `variable.(T)` will return the underlying `T` value (or panic unless the two return values are used)
+- Type switch:
+
+```
+func do(i interface{}) {
+	switch v := i.(type) {
+
+	case int:
+		fmt.Printf("Twice %v is %v\n", v, v*2)
+	case string:
+		fmt.Printf("%q is %v bytes long\n", v, len(v))
+	default:
+		fmt.Printf("I don't know about type %T!\n", v)
+	}
+}
+```
+
+- Implementing `String()` (from `Stringer`) is like implementing `Object.toString()`
+
+```
+type Stringer interface {
+    String() string
+}
+
+//
+
+func (p Person) String() string { //the receiver cannot be a pointer type
+	return fmt.Sprintf("%v (%v years)", p.Name, p.Age)
+}
+```
+
+- The `error` interface:
+
+```
+type error interface {
+    Error() string
+}
+```
+
+- `go f(x, y, z)` runs `f()` as a new goroutine; the args are run before in the current thread
